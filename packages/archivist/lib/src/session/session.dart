@@ -8,48 +8,47 @@ abstract class Session with TimeStampMixin {
   Session._();
 
   /// provides the status of the connectivity for a given session
-  ConnectivityResult get connectivity;
+  ConnectivityStatus get connectivity;
 
   /// provide the app version used in the seesion
-  String? get appVersion;
+  String get appVersion;
+
+  /// provide the uid
+  String? get uid;
 
   /// provides interaction for ***local*** database
-  Interaction get local;
+  Archive get local;
 
   /// provides interaction for ***remote*** database
-  Interaction get remote;
-
-  /// ends a sesssion assigning a timestamp to ended only if null
-  void end();
+  Archive get remote;
 
   ///
-  factory Session(
-    ConnectivityResult connectivity, [
-    TimeStamp now = nowUtcUnix,
-    String? appVersion,
-  ]) =>
-      _Session._(
-        connectivity,
-        now,
-        appVersion,
-      );
+  factory Session({
+    required String appVersion,
+    required ConnectivityStatus connectivity,
+    required TimeStamp now,
+    String? uid,
+  }) = _Session._;
 }
 
+///
 class _Session extends Session {
+  final TimeStamp now;
+
   @override
-  int? ended;
+  int get latest => maybeMax(local.last, remote.last) ?? started;
 
   @override
   final int started;
 
   @override
-  final String? appVersion;
+  final String? uid;
 
   @override
-  final ConnectivityResult connectivity;
+  final String appVersion;
 
   @override
-  TimeStamp now;
+  final ConnectivityStatus connectivity;
 
   @override
   final Interaction local;
@@ -57,15 +56,13 @@ class _Session extends Session {
   @override
   final Interaction remote;
 
-  @override
-  void end() => ended ??= now();
-
-  _Session._(
-    this.connectivity,
-    this.now, [
-    this.appVersion,
-  ])  : local = Interaction(now),
-        remote = Interaction(now),
+  _Session._({
+    required this.appVersion,
+    required this.connectivity,
+    required this.now,
+    this.uid,
+  })  : local = Interaction(timeStamp: now),
+        remote = Interaction(timeStamp: now),
         started = now(),
         super._();
 }

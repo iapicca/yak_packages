@@ -1,5 +1,9 @@
+export 'archive/all.dart';
 export 'archivist/all.dart';
-export 'external/all.dart';
+export 'connectivity/all.dart';
+export 'extensions/all.dart';
+export 'functions/all.dart';
+
 export 'interaction/all.dart';
 export 'lifecycle/all.dart';
 export 'local/all.dart';

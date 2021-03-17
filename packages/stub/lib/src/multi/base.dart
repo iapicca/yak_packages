@@ -11,6 +11,8 @@ abstract class MultiStubBase<Z> {
   /// returns a `StubElement`
   StubElement operator [](String name);
 
+  StubElement operator []=(String name, int timestamp);
+
   /// initialize a `StubElement` of a given Type `T`
   void bind<T>(String name);
 }

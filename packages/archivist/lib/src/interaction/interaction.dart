@@ -1,7 +1,7 @@
 import '../../archivist.dart';
 
 /// an interface for interaction
-abstract class Interaction {
+abstract class Interaction extends Archive {
   const Interaction._();
 
   /// returns the `timestamp` for a document interaction`
@@ -15,7 +15,11 @@ abstract class Interaction {
 
   /// an implementation of `Interaction`
   /// `now defailts to `nowUtcUnix`
-  const factory Interaction([TimeStamp now]) = _Interaction._;
+  factory Interaction({TimeStamp? timeStamp}) = _Interaction._;
+
+  /// "archives" the interaction making it read-only
+  /// and disallowing update and clear
+  Archive get archive;
 }
 
 class _Interaction extends Interaction {
@@ -23,8 +27,9 @@ class _Interaction extends Interaction {
 
   final Map<String, int> _map;
 
-  const _Interaction._([this._now = nowUtcUnix])
-      : _map = const {},
+  _Interaction._({TimeStamp? timeStamp})
+      : _now = timeStamp ?? nowUtcUnix,
+        _map = {},
         super._();
 
   @override
@@ -37,4 +42,13 @@ class _Interaction extends Interaction {
 
   @override
   void clear(String documentId) => _map.remove(documentId);
+
+  @override
+  int? get first => _map.values.first;
+
+  @override
+  int? get last => _map.values.last;
+
+  @override
+  Archive get archive => Archive.archive(_map);
 }
